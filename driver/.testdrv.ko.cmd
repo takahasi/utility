@@ -1,0 +1,1 @@
+cmd_/home/takahasi/work/work/driver/testdrv.ko := ld -r -m elf_i386 -T /usr/src/linux-headers-2.6.32-33-generic/scripts/module-common.lds --build-id -o /home/takahasi/work/work/driver/testdrv.ko /home/takahasi/work/work/driver/testdrv.o /home/takahasi/work/work/driver/testdrv.mod.o
