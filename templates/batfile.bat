@@ -27,8 +27,8 @@ exit
 @rem @return none
 @rem ------------------------------------
 :INITIALIZE
-echo "enter INITIALIZE"
-echo "exit INITIAIZE"
+echo "enter Initialize()"
+echo "exit Initialize()"
 exit /b
 
 @rem ------------------------------------
@@ -37,8 +37,8 @@ exit /b
 @rem @return none
 @rem ------------------------------------
 :EXECUTE
-echo "enter EXECUTE"
-echo "exit EXECUTE"
+echo "enter Execute()"
+echo "exit Execute()"
 exit /b
 
 @rem ------------------------------------
@@ -47,7 +47,19 @@ exit /b
 @rem @return none
 @rem ------------------------------------
 :FINALIZE
-echo "enter FINALIZE"
+echo "enter Finalize()"
 pause
-echo "exit FINALIZE"
+echo "exit Finalize()"
+exit /b
+
+@rem ------------------------------------
+@rem @brief  Usage
+@rem @param  none
+@rem @return none
+@rem ------------------------------------
+:USAGE
+echo "enter Usage()"
+echo "Usage : %~n0"
+echo "Option : xxx "
+echo "exit Usage()"
 exit /b
