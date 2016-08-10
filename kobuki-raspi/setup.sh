@@ -36,7 +36,7 @@ EOF
 function download_all_repositories()
 {
   sudo aptitude update
-  sudo aptitude install -y git subversion zip
+  sudo aptitude install -y git subversion software-properties-common
 
   rm -rf rpi.sh
   wget http://svn.openrtm.org/Embedded/trunk/RaspberryPi/tools/rpi.sh
@@ -51,7 +51,8 @@ function download_all_repositories()
   rm -rf MobileRobotNavigationFramework_dist
   git clone https://github.com/sugarsweetrobotics/MobileRobotNavigationFramework_dist
 
-  zip downloaded_raspi_packages -r rpi.sh kobuki UrgRTC MobileRobotNavigationFramework_dist
+  rm -rf mrpt-1.4.0.tar.gz
+  wget https://github.com/jlblancoc/mrpt/archive/1.4.0.tar.gz -O mrpt-1.4.0.tar.gz
 
   return 0
 }
@@ -145,15 +146,16 @@ function build_navigation()
 function build_mrpt()
 {
 
-  sudo add-apt-repository ppa:joseluisblancoc/mrpt
   sudo aptitude update
-  sudo aptitude install -y libmrpt-dev mrpt-apps \
-      build-essential pkg-config cmake \
+  sudo aptitude install -y build-essential pkg-config cmake \
       libwxgtk2.8-dev libftdi-dev freeglut3-dev \
       zlib1g-dev libusb-1.0-0-dev libudev-dev libfreenect-dev \
       libdc1394-22-dev libavformat-dev libswscale-dev \
       libassimp-dev libjpeg-dev libopencv-dev libgtest-dev \
       libeigen3-dev libsuitesparse-dev libpcap-dev
+
+  tar xzf mrpt-1.4.0.tar.gz
+  (cd mrpt-1.4.0 && cmake . && make -j && make install)
 
   return 0
 }
