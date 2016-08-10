@@ -27,6 +27,8 @@ Options:
   -d, --download : Downloads necessary packages from internet
   -i, --install  : Installs downloaded packages
 
+  if without options, executes download & install
+
 EOF
   return 1
 }
@@ -49,10 +51,7 @@ function download_all_repositories()
   rm -rf MobileRobotNavigationFramework_dist
   git clone https://github.com/sugarsweetrobotics/MobileRobotNavigationFramework_dist
 
-  rm -rf mrpt-1.4.0.tar.gz
-  wget https://github.com/jlblancoc/mrpt/archive/1.4.0.tar.gz -O mrpt-1.4.0.tar.gz
-
-  zip downloaded_raspi_packages -r rpi.sh kobuki UrgRTC MobileRobotNavigationFramework_dist mrpt-1.4.0.tar.gz
+  zip downloaded_raspi_packages -r rpi.sh kobuki UrgRTC MobileRobotNavigationFramework_dist
 
   return 0
 }
@@ -145,15 +144,16 @@ function build_navigation()
 
 function build_mrpt()
 {
-  sudo aptitude install -y build-essential pkg-config cmake \
+
+  sudo add-apt-repository ppa:joseluisblancoc/mrpt
+  sudo aptitude update
+  sudo aptitude install -y libmrpt-dev mrpt-apps \
+      build-essential pkg-config cmake \
       libwxgtk2.8-dev libftdi-dev freeglut3-dev \
       zlib1g-dev libusb-1.0-0-dev libudev-dev libfreenect-dev \
       libdc1394-22-dev libavformat-dev libswscale-dev \
       libassimp-dev libjpeg-dev libopencv-dev libgtest-dev \
       libeigen3-dev libsuitesparse-dev libpcap-dev
-
-  tar xzf mrpt-1.4.0.tar.gz
-  (cd mrpt-1.4.0 && cmake . && make -j2 && make install)
 
   return 0
 }
@@ -170,6 +170,7 @@ do
       ;;
     '-d'|'--download' )
       download_all_repositories
+      exit 0
       ;;
     '-i'|'--install' )
       setup_raspberrypi
@@ -177,6 +178,7 @@ do
       build_navigation
       build_mrpt
       generate_script
+      exit 0
       ;;
     *)
       #echo "[ERROR] invalid option $1 !!"
@@ -186,5 +188,12 @@ do
   esac
   shift
 done
+
+download_all_repositories
+setup_raspberrypi
+build_kobuki
+build_navigation
+build_mrpt
+generate_script
 
 exit 0
