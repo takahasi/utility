@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # @(#) This is setup script for raspberrypi & kobuki & URG
 # Please check the below URL
@@ -56,9 +56,12 @@ function download_all_repositories()
 
 function setup_raspberrypi()
 {
+  sudo aptitude update
+  sudo aptitude install -y git subversion
+
   sudo ./rpi.sh ${HOSTNAME} --type basic
 
-  sudo apt-get install hostapd
+  sudo aptitude install -y hostapd
   sudo zcat /usr/share/doc/hostapd/examples/hostapd.conf.gz > /etc/hostapd/hostapd.conf
 
   return 0
@@ -142,7 +145,7 @@ function build_navigation()
 
 function build_mrpt()
 {
-  sudo apt-get install build-essential pkg-config cmake \
+  sudo aptitude install -y build-essential pkg-config cmake \
       libwxgtk2.8-dev libftdi-dev freeglut3-dev \
       zlib1g-dev libusb-1.0-0-dev libudev-dev libfreenect-dev \
       libdc1394-22-dev libavformat-dev libswscale-dev \
