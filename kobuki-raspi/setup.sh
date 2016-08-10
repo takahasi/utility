@@ -33,6 +33,9 @@ EOF
 
 function download_all_repositories()
 {
+  sudo aptitude update
+  sudo aptitude install -y git subversion zip
+
   rm -rf rpi.sh
   wget http://svn.openrtm.org/Embedded/trunk/RaspberryPi/tools/rpi.sh
   chmod a+x rpi.sh
@@ -57,12 +60,9 @@ function download_all_repositories()
 function setup_raspberrypi()
 {
   sudo aptitude update
-  sudo aptitude install -y git subversion
+  sudo aptitude install -y git subversion zip hostapd
 
   sudo ./rpi.sh ${HOSTNAME} --type basic
-
-  sudo aptitude install -y hostapd
-  sudo zcat /usr/share/doc/hostapd/examples/hostapd.conf.gz > /etc/hostapd/hostapd.conf
 
   return 0
 }
