@@ -36,7 +36,7 @@ EOF
 function download_all_repositories()
 {
   sudo aptitude update
-  sudo aptitude install -y git subversion software-properties-common
+  sudo aptitude install -y git subversion xrdp software-properties-common
 
   rm -rf rpi.sh
   wget http://svn.openrtm.org/Embedded/trunk/RaspberryPi/tools/rpi.sh
@@ -155,7 +155,7 @@ function build_mrpt()
       libeigen3-dev libsuitesparse-dev libpcap-dev
 
   tar xzf mrpt-1.4.0.tar.gz
-  (cd mrpt-1.4.0 && cmake . && make -j && make install)
+  (cd mrpt-1.4.0 && cmake . && make -j2 && make install)
 
   return 0
 }
