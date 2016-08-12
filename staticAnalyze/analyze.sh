@@ -32,6 +32,7 @@ Description:
 
 Options:
   -h,--help       : Print usage
+  --all           : analyze with all tools
   --cppcheck      : analyze with cppcheck
   --cccc          : analyze with cccc
   --sloccount     : analyze with sloccount
@@ -219,13 +220,18 @@ do
       echo "[CONF] Enabled cpplint"
       ENABLE_CPPLINT=y
       ;;
-    *)
+    '--all' )
       echo "[CONF] Enabled all"
       ENABLE_CPPCHECK=y
       ENABLE_CCCC=y
       ENABE_CPD=y
       ENABE_SLOCCOUNT=y
       ENABE_CPPLINT=y
+      ;;
+    *)
+      echo "[CONF] Unknown options! $1"
+      usage
+      exit 1
       ;;
   esac
   shift
