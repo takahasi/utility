@@ -100,11 +100,11 @@ function generate_script()
 readonly NAMESERVICE=omniorb4-nameserver
 readonly RTM_NAMING=/usr/bin/rtm-naming
 readonly KOBUKI_RTC=/usr/lib/openrtm-1.1/rtc/KobukiAISTComp
-readonly URG_RTC=UrgRTC/build/src/UrgRTCComp
-readonly PATHPLANNER_RTC=PathPlanner_MRPT/build/src/PathPlanner_MRPTComp
-readonly PATHFOLLOWER_RTC=SimplePathFollower/build/src/SimplePathFollowerComp
-readonly LOCALIZATION_RTC=Localization_MRPT/build/src/Localization_MRPTComp
-readonly MAPPER_RTC=Mapper_MRPT/build/src/Mapper_MRPTComp
+readonly URG_RTC=${PWD}/UrgRTC/build/src/UrgRTCComp
+readonly PATHPLANNER_RTC=${PWD}/PathPlanner_MRPT/build/src/PathPlanner_MRPTComp
+readonly PATHFOLLOWER_RTC=${PWD}/SimplePathFollower/build/src/SimplePathFollowerComp
+readonly LOCALIZATION_RTC=${PWD}/Localization_MRPT/build/src/Localization_MRPTComp
+readonly MAPPER_RTC=${PWD}/Mapper_MRPT/build/src/Mapper_MRPTComp
 
 if [ "\${IFACE}" != wlan0 ]; then
   exit 0
@@ -192,7 +192,7 @@ function build_mrpt()
       zlib1g-dev libusb-1.0-0-dev libudev-dev libfreenect-dev \
       libdc1394-22-dev libavformat-dev libswscale-dev \
       libassimp-dev libjpeg-dev libopencv-dev libgtest-dev \
-      libeigen3-dev libsuitesparse-dev libpcap-dev
+      libeigen3-dev libsuitesparse-dev libpcap-dev doxygen
 
   tar xzf mrpt-1.4.0.tar.gz
   (cd mrpt-1.4.0 && cmake . && \
@@ -234,12 +234,12 @@ do
   shift
 done
 
-download_all_repositories
-setup_raspberrypi
-build_kobuki
-build_urg
-build_mrpt
-build_navigation
+#download_all_repositories
+#setup_raspberrypi
+#build_kobuki
+#build_urg
+#build_mrpt
+#build_navigation
 generate_script
 
 exit 0
