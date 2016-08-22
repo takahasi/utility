@@ -49,7 +49,20 @@ function download_all_repositories()
   git clone https://github.com/sugarsweetrobotics/UrgRTC.git
 
   rm -rf MobileRobotNavigationFramework_dist
-  git clone https://github.com/sugarsweetrobotics/MobileRobotNavigationFramework_dist
+  git clone https://github.com/sugarsweetrobotics/MobileRobotNavigationFramework_dist.git
+
+  rm -rf Mapper_MRPT
+  # git clone https://github.com/sugarsweetrobotics/Mapper_MRPT.git
+  git clone https://github.com/takahasi/Mapper_MRPT.git
+
+  rm -rf Localization_MRPT
+  git clone https://github.com/sugarsweetrobotics/Localization_MRPT.git
+
+  rm -rf PathPlanner_MRPT
+  git clone https://github.com/sugarsweetrobotics/PathPlanner_MRPT.git
+
+  rm -rf SimplePathFollower
+  git clone https://github.com/sugarsweetrobotics/SimplePathFollower.git
 
   rm -rf mrpt-1.4.0.tar.gz
   wget https://github.com/jlblancoc/mrpt/archive/1.4.0.tar.gz -O mrpt-1.4.0.tar.gz
@@ -134,6 +147,34 @@ function build_urg()
 
 function build_navigation()
 {
+  ( \
+    cd Mapper_MRPT && \
+    mkdir -p build && cd build && \
+    cmake -DCMAKE_INSTALL_PREFIX=/usr .. && make && \
+    cd src && sudo make install \
+  )
+
+  ( \
+    cd Localization_MRPT && \
+    mkdir -p build && cd build && \
+    cmake -DCMAKE_INSTALL_PREFIX=/usr .. && make && \
+    cd src && sudo make install \
+  )
+
+  ( \
+    cd PathPlanner_MRPT && \
+    mkdir -p build && cd build && \
+    cmake -DCMAKE_INSTALL_PREFIX=/usr .. && make && \
+    cd src && sudo make install \
+  )
+
+  ( \
+    cd SimplePathFollower && \
+    mkdir -p build && cd build && \
+    cmake -DCMAKE_INSTALL_PREFIX=/usr .. && make && \
+    cd src && sudo make install \
+  )
+
   readonly URG_RTC_CONF=MobileRobotNavigationFramework_dist/conf/UrgRTC0.conf
 
   # Patch for default COM port
@@ -155,7 +196,9 @@ function build_mrpt()
       libeigen3-dev libsuitesparse-dev libpcap-dev
 
   tar xzf mrpt-1.4.0.tar.gz
-  (cd mrpt-1.4.0 && cmake . && make -j2 && make install)
+  (cd mrpt-1.4.0 && cmake . && \
+      make mrpt-base mrpt-gui mrpt-maps mrpt-obs mrpt-opengl mrpt-scanmatching mrpt-slam mrpt-vision -j2 && \
+      sudo make install)
 
   return 0
 }
@@ -176,6 +219,7 @@ do
       ;;
     '-i'|'--install' )
       setup_raspberrypi
+      build_urg
       build_kobuki
       build_navigation
       build_mrpt
@@ -192,10 +236,11 @@ do
 done
 
 download_all_repositories
-setup_raspberrypi
-build_kobuki
+#setup_raspberrypi
+#build_kobuki
+#build_urg
+#build_mrpt
 build_navigation
-build_mrpt
 generate_script
 
 exit 0
