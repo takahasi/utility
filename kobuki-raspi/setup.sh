@@ -100,12 +100,11 @@ function generate_script()
 readonly NAMESERVICE=omniorb4-nameserver
 readonly RTM_NAMING=/usr/bin/rtm-naming
 readonly KOBUKI_RTC=/usr/lib/openrtm-1.1/rtc/KobukiAISTComp
-readonly MRPT_FW_DIR=`pwd`/MobileRobotNavigationFramework_dist/src
-readonly URG_RTC=\${MRPT_FW_DIR}/UrgRTC/build-linux/src/UrgRTCComp
-readonly PATHPLANNER_RTC=\${MRPT_FW_DIR}/PathPlanner_MRPT/build-linux/src/PathPlanner_MRPTComp
-readonly PATHFOLLOWER_RTC=\${MRPT_FW_DIR}/SimplePathFollower/build-linux/src/SimplePathFollowerComp
-readonly LOCALIZATION_RTC=\${MRPT_FW_DIR}/Localization_MRPT/build-linux/sec/Localization_MRPTComp
-readonly MAPPER_RTC=\${MRPT_FW_DIR}/Mapper_MRPT/build-linux/src/Mapper_MRPTComp
+readonly URG_RTC=UrgRTC/build/src/UrgRTCComp
+readonly PATHPLANNER_RTC=PathPlanner_MRPT/build/src/PathPlanner_MRPTComp
+readonly PATHFOLLOWER_RTC=SimplePathFollower/build/src/SimplePathFollowerComp
+readonly LOCALIZATION_RTC=Localization_MRPT/build/src/Localization_MRPTComp
+readonly MAPPER_RTC=Mapper_MRPT/build/src/Mapper_MRPTComp
 
 if [ "\${IFACE}" != wlan0 ]; then
   exit 0
@@ -236,10 +235,10 @@ do
 done
 
 download_all_repositories
-#setup_raspberrypi
-#build_kobuki
-#build_urg
-#build_mrpt
+setup_raspberrypi
+build_kobuki
+build_urg
+build_mrpt
 build_navigation
 generate_script
 
