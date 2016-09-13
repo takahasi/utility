@@ -32,12 +32,12 @@ Description:
 
 Options:
   -h,--help       : Print usage
-  --all           : analyze with all tools
   --cppcheck      : analyze with cppcheck
   --cccc          : analyze with cccc
   --sloccount     : analyze with sloccount
   --cpd           : analyze with cpd
   --cpplint       : analyze with cpplint
+  --all           : analyze with all methods
 EOF
   return 1
 }
@@ -62,14 +62,28 @@ function install_cppcheck() {
 function do_cppcheck() {
   echo '[ANALYZE] Start cppcheck...'
   local CPPCHECK_BIN=cppcheck/cppcheck
-  local CPPCHECK_RESULT=${RESULTS_DIR}/cppcheck_results.xml
-  local CPPCHECK_OPTION="--quiet --enable=all --xml --file-list=-"
+  local CPPCHECK_HTML_BIN=cppcheck/htmlreport/cppcheck-htmlreport
+  local CPPCHECK_RESULTS_DIR=${RESULTS_DIR}/cppcheck
+  local CPPCHECK_RESULT=${CPPCHECK_RESULTS_DIR}/cppcheck
+  local CPPCHECK_RESULT_XML=${CPPCHECK_RESULT}.xml
+  local CPPCHECK_RESULT_CSV=${CPPCHECK_RESULT}.csv
+  local CPPCHECK_RESULT_HTML=${CPPCHECK_RESULT}.html
+  local CPPCHECK_OPTION="--quiet --enable=all --file-list=-"
+  local CPPCHECK_OPTION_XML="${CPPCHECK_OPTION} --xml"
+  local CPPCHECK_OPTION_CSV="${CPPCHECK_OPTION}"
+  local CPPCHECK_HTML_OPTION="--file=${CPPCHECK_RESULT_XML} --report-dir ${CPPCHECK_RESULT_HTML}"
 
   if [ ! -f ${CPPCHECK_BIN} ]; then
     install_cppcheck
   fi
 
-  find_sources | ${CPPCHECK_BIN} ${CPPCHECK_OPTION} 2> ${CPPCHECK_RESULT}
+  if [ ! -d ${CPPCHECK_RESULTS_DIR} ]; then
+    mkdir -p ${CPPCHECK_RESULTS_DIR}
+  fi
+
+  find_sources | ${CPPCHECK_BIN} ${CPPCHECK_OPTION_XML} 2> ${CPPCHECK_RESULT_XML}
+  find_sources | ${CPPCHECK_BIN} ${CPPCHECK_OPTION_CSV} 2> ${CPPCHECK_RESULT_CSV}
+  ${CPPCHECK_HTML_BIN} ${CPPCHECK_HTML_OPTION}
 
   echo '[ANALYZE] Finish cppcheck'
   return 0
@@ -147,10 +161,15 @@ function install_cpplint() {
 function do_cpplint() {
   echo '[ANALYZE] Start cpplint...'
   local CPPLINT_BIN=cpplint/cpplint/cpplint.py
-  local CPPLINT_RESULT=${RESULTS_DIR}/cpplint.xml
+  local CPPLINT_RESULTS_DIR=${RESULTS_DIR}/cpplint
+  local CPPLINT_RESULT=${CPPLINT_RESULTS_DIR}/cpplint.xml
 
   if [ ! -f ${CPPLINT_BIN} ]; then
     install_cpplint
+  fi
+
+  if [ ! -d ${CPPLINT_RESULTS_DIR} ]; then
+    mkdir -p ${CPPLINT_RESULTS_DIR}
   fi
 
   ${CPPLINT_BIN} `find ${SRC_DIR} -name *.cpp` 2>&1 | cat > ${CPPLINT_RESULT}
@@ -176,14 +195,24 @@ function install_cpd() {
 function do_cpd() {
   echo '[ANALYZE] Start cpd...'
   local CPD_BIN=pmd/bin/run.sh
-  local CPD_RESULT=${RESULTS_DIR}/cpd_results.xml
-  local CPD_OPTION="--minimum-tokens 50 --files --language cpp --format xml"
+  local CPD_RESULTS_DIR=${RESULTS_DIR}/cpd
+  local CPD_RESULT=${CPD_RESULTS_DIR}/cpd_results
+  local CPD_RESULT_XML=${CPD_RESULT}.xml
+  local CPD_RESULT_CSV=${CPD_RESULT}.csv
+  local CPD_OPTION="--minimum-tokens 50 --files --language cpp"
+  local CPD_OPTION_XML="${CPD_OPTION} --format xml"
+  local CPD_OPTION_CSV="${CPD_OPTION} --format csv"
 
   if [ ! -f ${CPD_BIN} ]; then
     install_cpd
   fi
 
-  ${CPD_BIN} cpd ${CPD_OPTION} --files ${SRC_DIR} > ${CPD_RESULT}
+  if [ ! -d ${CPD_RESULTS_DIR} ]; then
+    mkdir -p ${CPD_RESULTS_DIR}
+  fi
+
+  ${CPD_BIN} cpd ${CPD_OPTION_XML} --files ${SRC_DIR} > ${CPD_RESULT_XML} &> /dev/null &
+  ${CPD_BIN} cpd ${CPD_OPTION_CSV} --files ${SRC_DIR} > ${CPD_RESULT_CSV} &> /dev/null &
 
   echo '[ANALYZE] Finish cpd'
   return 0
@@ -220,17 +249,16 @@ do
       echo "[CONF] Enabled cpplint"
       ENABLE_CPPLINT=y
       ;;
-    '--all' )
+  --all)
       echo "[CONF] Enabled all"
       ENABLE_CPPCHECK=y
       ENABLE_CCCC=y
-      ENABE_CPD=y
-      ENABE_SLOCCOUNT=y
-      ENABE_CPPLINT=y
+      ENABLE_CPD=y
+      ENABLE_SLOCCOUNT=y
+      ENABLE_CPPLINT=y
       ;;
-    *)
-      echo "[CONF] Unknown options! $1"
-      usage
+  *)
+      echo "[CONF] invalid options $1"
       exit 1
       ;;
   esac
