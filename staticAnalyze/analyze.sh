@@ -28,7 +28,12 @@ Usage:
   $0
 
 Description:
-  This is xxxxxx.
+  This is script for several static analysis.
+
+Environment:
+  WORK SPACE        = ${WORKSPACE}
+  SOURCE DIRECTORY  = ${SRC_DIR}
+  RESULTS DIRECTORY = ${RESULTS_DIR}
 
 Options:
   -h,--help       : Print usage
@@ -38,6 +43,15 @@ Options:
   --cpd           : analyze with cpd
   --cpplint       : analyze with cpplint
   --all           : analyze with all methods
+
+Examples:
+   Executes all analysis;
+    \$ $0 --all
+   Executes CPD & CPPCHECK;
+    \$ $0 --cpd --cppcheck
+   Show help message;
+    \$ $0 --help
+
 EOF
   return 1
 }
@@ -83,7 +97,7 @@ function do_cppcheck() {
 
   find_sources | ${CPPCHECK_BIN} ${CPPCHECK_OPTION_XML} 2> ${CPPCHECK_RESULT_XML}
   find_sources | ${CPPCHECK_BIN} ${CPPCHECK_OPTION_CSV} 2> ${CPPCHECK_RESULT_CSV}
-  ${CPPCHECK_HTML_BIN} ${CPPCHECK_HTML_OPTION}
+  ${CPPCHECK_HTML_BIN} ${CPPCHECK_HTML_OPTION} &> /dev/null
 
   echo '[ANALYZE] Finish cppcheck'
   return 0
@@ -104,13 +118,18 @@ function install_cccc() {
 function do_cccc() {
   echo '[ANALYZE] Start cccc...'
   local CCCC_BIN=cccc/cccc/cccc
-  local CCCC_RESULT=${RESULTS_DIR}/cccc
+  local CCCC_RESULTS_DIR=${RESULTS_DIR}/cccc
+  local CCCC_RESULT=${CCCC_RESULTS_DIR}/cccc.html
 
   if [ ! -f ${CCCC_BIN} ]; then
     install_cccc
   fi
 
-  find_sources | xargs ${CCCC_BIN} --outdir="${CCCC_RESULT}"
+  if [ ! -d ${CCCC_RESULTS_DIR} ]; then
+    mkdir -p ${CCCC_RESULTS_DIR}
+  fi
+
+  find_sources | xargs ${CCCC_BIN} --outdir="${CCCC_RESULT}" &> /dev/null
 
   echo '[ANALYZE] Finish cccc'
   return 0
@@ -131,11 +150,16 @@ function install_sloccount() {
 function do_sloccount() {
   echo '[ANALYZE] Start sloccount...'
   local SLOCCOUNT_BIN=sloccount/sloccount
-  local SLOCCOUNT_RESULT=${RESULTS_DIR}/sloccount.sc
+  local SLOCCOUNT_RESULTS_DIR=${RESULTS_DIR}/sloccount
+  local SLOCCOUNT_RESULT=${SLOCCOUNT_RESULTS_DIR}/sloccount.txt
   local SLOCCOUNT_OPTION="--duplicates --wide"
 
   if [ ! -f ${SLOCCOUNT_BIN} ]; then
     install_sloccount
+  fi
+
+  if [ ! -d ${SLOCCOUNT_RESULTS_DIR} ]; then
+    mkdir -p ${SLOCCOUNT_RESULTS_DIR}
   fi
 
   # patch for issue of sloccount path
@@ -211,8 +235,8 @@ function do_cpd() {
     mkdir -p ${CPD_RESULTS_DIR}
   fi
 
-  ${CPD_BIN} cpd ${CPD_OPTION_XML} --files ${SRC_DIR} > ${CPD_RESULT_XML} &> /dev/null &
-  ${CPD_BIN} cpd ${CPD_OPTION_CSV} --files ${SRC_DIR} > ${CPD_RESULT_CSV} &> /dev/null &
+  ${CPD_BIN} cpd ${CPD_OPTION_XML} --files ${SRC_DIR} > ${CPD_RESULT_XML} &
+  ${CPD_BIN} cpd ${CPD_OPTION_CSV} --files ${SRC_DIR} > ${CPD_RESULT_CSV} &
 
   echo '[ANALYZE] Finish cpd'
   return 0
@@ -258,12 +282,19 @@ do
       ENABLE_CPPLINT=y
       ;;
   *)
-      echo "[CONF] invalid options $1"
+      echo "[ERROR] invalid options $1"
+      usage
       exit 1
       ;;
   esac
   shift
 done
+
+if [ ! -d ${SRC_DIR} ]; then
+    echo "[ERROR] Not exist ${SRC_DIR}"
+    usage
+    exit 1
+fi
 
 if [ ! -d ${RESULTS_DIR} ]; then
     mkdir -p ${RESULTS_DIR}
