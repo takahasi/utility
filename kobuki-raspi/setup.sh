@@ -234,12 +234,12 @@ do
   shift
 done
 
-#download_all_repositories
-#setup_raspberrypi
-#build_kobuki
-#build_urg
-#build_mrpt
-#build_navigation
+download_all_repositories
+setup_raspberrypi
+build_kobuki
+build_urg
+build_mrpt
+build_navigation
 generate_script
 
 exit 0
