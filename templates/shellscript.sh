@@ -4,17 +4,16 @@
 # Checks unnecessary paramters
 set -ue
 
-####################
-# GLOBAL CONSTANTS #
-####################
-# readonly XXX="xxx"
+# GLOBAL CONSTANTS
+# ================
+readonly GLOBAL_CONST="xxx"
 
-####################
-# GLOBAL VARIABLES #
-####################
-# XXX="xxx"
+# GLOBAL VARIABLES
+# ================
+GLOBAL_VAR=0
 
-## Usage
+# Usage
+# =====
 function usage() {
   cat <<EOF
 Usage:
@@ -31,15 +30,24 @@ EOF
   return 1
 }
 
-## FunctionXXX
-function func() {
+# FUNCTIONS
+# =========
+
+function func1() {
   # local xxx="xxx"
+  echo "func1"
   return 0
 }
 
-################
-# MAIN ROUTINE #
-################
+function func2() {
+  # local xxx="xxx"
+  echo "func2"
+  return 0
+}
+
+
+# MAIN ROUTINE
+# ============
 
 while (( $# > 0 ))
 do
@@ -50,6 +58,8 @@ do
       ;;
     '-a'|'--aaa' )
       echo "$0 $1"
+      echo "GLOBAL_VAR=1"
+      GLOBAL_VAR=1
       ;;
     '-b'|'--bbb' )
       if [[ -z "$2" ]] || [[ "$2" =~ ^-+ ]]; then
@@ -60,14 +70,16 @@ do
       echo "$0 $1 $2"
       ;;
     *)
-      #echo "[ERROR] invalid option $1 !!"
-      #usage
-      #exit 1
+      echo "[ERROR] invalid option $1 !!"
       ;;
   esac
   shift
 done
 
-func
+func1
+
+if [[ $GLOBAL_VAR -eq 1 ]]; then
+  func2
+fi
 
 exit 0
