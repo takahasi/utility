@@ -1,5 +1,20 @@
 #!/bin/bash
-# @(#) This is xxxxxxxxxxxx.
+#<help>
+#
+# This is xxxxxxxxxxxx.
+#
+# Usage:
+#   ./shellscript.sh
+#
+# Description:
+#   This is xxxxxx.
+#
+# Options:
+#   -h       : Print usage
+#   -a       : aaa
+#   -b ARGS  : bbb
+#
+#</help>
 
 # Checks unnecessary paramters
 set -ue
@@ -15,19 +30,8 @@ GLOBAL_VAR=0
 # Usage
 # =====
 function usage() {
-  cat <<EOF
-Usage:
-  $0
-
-Description:
-  This is xxxxxx.
-
-Options:
-  -h       : Print usage
-  -a       : aaa
-  -b ARGS  : bbb
-EOF
-  return 1
+  sed -n '/^#<help>/, /^#<\/help>/p' $0  | sed -e '1d;$d' | cut -b3-
+  return 0
 }
 
 # FUNCTIONS
