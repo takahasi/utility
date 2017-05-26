@@ -2,7 +2,7 @@
 
 function build()
 {
-  image=$1
+  local image=$1
 
   cat <<EOF
 
@@ -12,7 +12,12 @@ function build()
 
 EOF
 
-  docker build -t $image $1/
+  docker build -t $image -q -f $1/Dockerfile
+}
+
+function test()
+{
+  local image=$1
 
   cat <<EOF
 

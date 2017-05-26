@@ -40,7 +40,7 @@ class DockerImage:
         top_path = dist + '-openrtm' + self._rtm_version_major + self._rtm_version_minor + self._rtm_version_revision
         if not os.path.exists(top_path):
             os.makedirs(top_path)
-        shutil.copyfile("pkg_install_ubuntu.sh", top_path + "/pkg_install.sh")
+        shutil.copy("pkg_install_ubuntu.sh", top_path + "/pkg_install.sh")
         f = open(top_path + '/Dockerfile', 'w')
         print f
         m = dockerfile_template
