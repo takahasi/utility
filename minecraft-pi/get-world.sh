@@ -36,6 +36,6 @@ download_unzip $BASE_URL/Canyons.zip
 download_unzip $BASE_URL/MW3-Seatown.zip
 download_unzip $BASE_URL/Hamster-Escape-Part-1.zip
 
-cp -rf world/* $WORLD_DIR
+cp -rf * $WORLD_DIR
 
 exit 0
